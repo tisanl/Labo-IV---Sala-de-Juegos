@@ -1,12 +1,22 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angular/router';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone : true,
+  imports: [RouterOutlet, RouterLinkActive, RouterLink, NgbModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'Sala-de-Juegos';
+  title = 'Sala de Juegos';
+
+  constructor(private router: Router) {
+
+  }
+
+  goTo(path: string) {
+    this.router.navigate([path]);
+  }
 }

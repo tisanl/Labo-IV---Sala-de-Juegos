@@ -1,0 +1,62 @@
+.custom-modal-content {
+    background-color: #010b15;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.custom-modal-header {
+    background-color: #09252c;
+    color: #b39353;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: none;
+}
+
+.custom-modal-body {
+    background-color: #09252c;
+    color: #ffffff;
+    padding: 1rem 1.5rem;
+}
+
+.custom-modal-footer {
+    background-color: #09252c;
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 1.5rem;
+    border-top: none;
+}
+
+.btn-volver {
+    background-color: #b39353;
+    color: #010b15;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.btn-volver:hover {
+    background-color: #51db84;
+    color: #010b15;
+    transform: scale(1.05);
+}
+
+.custom-close {
+    background: #1c4549;
+    border: 1px solid #b39353;
+    color: #b39353;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+}
+
+.custom-close:hover {
+    color: #51db84;
+    border-color: #51db84;
+}
