@@ -31,7 +31,6 @@ export class LoginComponent {
         await this.login()
         await this.getUsuarioId()
         await this.guardarLog()
-        console.log(this.usuario)
         this.goTo('home');
       }
     }
@@ -77,7 +76,7 @@ export class LoginComponent {
       return false
     }
     else {
-      this.usuario = data
+      this.usuario = Object.assign(new Usuario(), data);
       return true
     }
   }
