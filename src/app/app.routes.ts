@@ -9,7 +9,7 @@ export const routes: Routes = [
     { path: 'home', loadComponent: () =>
         import('./components/home/home.component').then(c => c.HomeComponent), 
     },
-    { path: 'aboutMe', loadComponent: () =>
+    { path: 'about-me', loadComponent: () =>
         import('./components/about-me/about-me.component').then(c => c.AboutMeComponent), 
     },
     // La ruta comodin debe ir siempre al final

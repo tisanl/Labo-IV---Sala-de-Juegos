@@ -1,1 +1,20 @@
-<p>about-me works!</p>
+<div class="about-me-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-image">
+                <img [src]="imagenUrl" alt="Imagen de perfil" />
+            </div>
+            <div class="profile-info">
+                <br>
+                <h2>{{ nombre }} {{ apellido }}</h2><br><br>
+                <p><strong></strong> {{ materia }}</p>
+                <p><strong>División:</strong> {{ division }}</p>
+            </div>
+        </div>
+
+        <div class="description">
+            <h3>Descripción del Juego Propio</h3>
+            <p>{{ descripcion }}</p>
+        </div>
+    </div>
+</div>

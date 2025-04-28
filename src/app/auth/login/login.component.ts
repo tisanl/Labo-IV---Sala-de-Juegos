@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalMsjErrorComponent } from '../../components/modal-msj-error/modal-msj-error.component';
 
-import { createClient, User } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
 import { environment } from '../../../environments/environment';
 
 import { Usuario } from '../../models/usuario/usuario';
@@ -28,10 +28,11 @@ export class LoginComponent {
   async ingresar() {
     if (this.validarDatosIngreso()) {
       if (await this.emailYaRegistrado()) {
-        await this.login()
-        await this.getUsuarioId()
-        await this.guardarLog()
-        this.goTo('home');
+        if (await this.login()){
+          await this.getUsuarioId()
+          await this.guardarLog()
+          this.goTo('home');
+        }
       }
     }
     else this.mostrarError('Hay datos incorrectos.');
