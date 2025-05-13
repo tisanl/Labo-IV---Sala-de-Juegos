@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-about-me',
@@ -15,4 +16,10 @@ export class AboutMeComponent {
   descripcion: string = 'Descripcion del juego';
   imagen: File | null = null;
   imagenUrl: string = 'assets/images/mi-imagen.png';
+
+  constructor(private router: Router) { }
+
+  goTo(path: string) {
+    this.router.navigate([path]);
+  }
 }

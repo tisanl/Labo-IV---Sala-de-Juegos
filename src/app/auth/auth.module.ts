@@ -16,7 +16,7 @@ import { RegistroComponent } from './registro/registro.component';
     CommonModule,
     AuthRoutingModule,
     NgbModule,
-    FormsModule
+    FormsModule,
   ],
 })
 export class AuthModule {}

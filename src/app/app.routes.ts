@@ -12,6 +12,11 @@ export const routes: Routes = [
     { path: 'about-me', loadComponent: () =>
         import('./components/about-me/about-me.component').then(c => c.AboutMeComponent), 
     },
+    { path: 'games', loadChildren: () =>
+        import('./games/games.module').then(m => m.GamesModule), 
+    },
     // La ruta comodin debe ir siempre al final
-    //{ path: '**', component: HomeComponent },
+    { path: '**', loadComponent: () =>
+        import('./components/home/home.component').then(c => c.HomeComponent),
+    },
 ];

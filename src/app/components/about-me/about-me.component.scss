@@ -8,24 +8,23 @@
     min-height: 100vh;
 }
 
-/* Estilo de la tarjeta de perfil */
 .profile-card {
+    position: relative;
     background-color: #09252c;
     color: #fff;
     border-radius: 8px;
     padding: 2rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     width: 100%;
-    max-width: 500px; /* Reducción del ancho máximo */
-    margin: 0 auto; /* Centrado de la tarjeta */
+    max-width: 500px;
+    margin: 0 auto;
 }
 
-/* Cabecera de la tarjeta */
 .profile-header {
     display: flex;
-    justify-content: flex-start; /* Alinea los elementos a la izquierda */
-    align-items: flex-start; /* Alinea los elementos desde la parte superior */
-    margin-bottom: 1.5rem; /* Ajuste del espacio debajo de la cabecera */
+    justify-content: flex-start;
+    align-items: flex-start; 
+    margin-bottom: 1.5rem; 
 }
 
 .profile-image img {

@@ -4,12 +4,10 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalMsjErrorComponent } from '../../components/modal-msj-error/modal-msj-error.component';
 
-import { createClient, User } from '@supabase/supabase-js'
-import { environment } from '../../../environments/environment';
-
+import { ConexionSupabaseService } from '../../services/conexionSupabase/conexion-supabase.service';
+import { User } from '@supabase/supabase-js'
+import { UsuarioService } from '../../services/usuario/usuario.service';
 import { Usuario } from '../../models/usuario/usuario';
-
-const supabase = createClient(environment.apiUrl, environment.publicAnonKey)
 
 @Component({
   selector: 'app-registro',
@@ -24,9 +22,7 @@ export class RegistroComponent {
   email: string = '';
   password: string = '';
 
-  usuario: Usuario = new Usuario();
-
-  constructor(private router: Router, private modalService: NgbModal) { }
+  constructor(private router: Router, private modalService: NgbModal, private supabase: ConexionSupabaseService, private usuario: UsuarioService) { }
 
   async registrarUsuario() {
     if (this.validarDatosRegistro()) {
@@ -59,7 +55,7 @@ export class RegistroComponent {
   }
 
   async registrarAuth() {
-    const { data, error } = await supabase.auth.signUp({ email: this.email, password: this.password, });
+    const { data, error } = await this.supabase.cliente.auth.signUp({ email: this.email, password: this.password, });
 
     if (error) {
       console.log(error.code)
@@ -79,7 +75,7 @@ export class RegistroComponent {
   }
 
   async guardarDatosTablaUsuario(user: User) {
-    const { data, error } = await supabase.from('usuarios')
+    const { data, error } = await this.supabase.cliente.from('usuarios')
       .insert([{ id: user.id, nombre: this.nombre, apellido: this.apellido, email: this.email, fecha_nacimiento: this.fecha_nacimiento }]);
 
     if (error) {
@@ -88,17 +84,19 @@ export class RegistroComponent {
       return false
     }
     else {
-      this.usuario.id = user.id
-      this.usuario.nombre = this.nombre
-      this.usuario.apellido = this.apellido
-      this.usuario.fecha_nacimiento = this.fecha_nacimiento
-      this.usuario.email = this.email
+      let usuario = new Usuario()
+      usuario.id = user.id
+      usuario.nombre = this.nombre
+      usuario.apellido = this.apellido
+      usuario.fecha_nacimiento = this.fecha_nacimiento
+      usuario.email = this.email
+      this.usuario.setUsuario(usuario);
       return true
     }
   }
 
   async guardarLog() {
-    const { data, error } = await supabase.from('log').insert([{ id_usuario: this.usuario.id }]);
+    const { data, error } = await this.supabase.cliente.from('log').insert([{ id_usuario: this.usuario.data!.id }]);
 
     if (error) {
       this.mostrarError('Problema accediendo a la base de datos.\nIntente denuevo mas tarde');
@@ -108,7 +106,7 @@ export class RegistroComponent {
   }
 
   async emailNoRegistrado() {
-    const { data, error } = await supabase.from('usuarios').select('id').eq('email', this.email).maybeSingle();
+    const { data, error } = await this.supabase.cliente.from('usuarios').select('id').eq('email', this.email).maybeSingle();
 
     if (error) {
       this.mostrarError('Problema accediendo a la base de datos.\nIntente denuevo mas tarde');

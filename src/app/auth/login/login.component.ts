@@ -4,12 +4,9 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalMsjErrorComponent } from '../../components/modal-msj-error/modal-msj-error.component';
 
-import { createClient } from '@supabase/supabase-js'
-import { environment } from '../../../environments/environment';
-
+import { ConexionSupabaseService } from '../../services/conexionSupabase/conexion-supabase.service';
+import { UsuarioService } from '../../services/usuario/usuario.service';
 import { Usuario } from '../../models/usuario/usuario';
-
-const supabase = createClient(environment.apiUrl, environment.publicAnonKey);
 
 @Component({
   selector: 'app-login',
@@ -20,10 +17,9 @@ const supabase = createClient(environment.apiUrl, environment.publicAnonKey);
 export class LoginComponent {
   email: string = '';
   password: string = '';
+  usuarioId: string = '';
 
-  usuario: Usuario = new Usuario();
-
-  constructor(private router: Router, private modalService: NgbModal) { }
+  constructor(private router: Router, private modalService: NgbModal, private supabase: ConexionSupabaseService, private usuario: UsuarioService) { }
 
   async ingresar() {
     if (this.validarDatosIngreso()) {
@@ -45,7 +41,7 @@ export class LoginComponent {
   }
 
   async login() {
-    const { data, error } = await supabase.auth.signInWithPassword({ email: this.email, password: this.password, });
+    const { data, error } = await this.supabase.cliente.auth.signInWithPassword({ email: this.email, password: this.password, });
 
     if (error) {
       console.log(error.code)
@@ -60,13 +56,13 @@ export class LoginComponent {
       return false
     }
     else {
-      this.usuario.id = data.user.id
+      this.usuarioId = data.user.id
       return true
     }
   }
 
   async getUsuarioId() {
-    const { data, error } = await supabase.from('usuarios').select('*').eq('id', this.usuario.id).single();
+    const { data, error } = await this.supabase.cliente.from('usuarios').select('*').eq('id', this.usuarioId).single();
 
     if (error) {
       this.mostrarError('Problema accediendo a la base de datos.\nIntente denuevo mas tarde');
@@ -77,13 +73,13 @@ export class LoginComponent {
       return false
     }
     else {
-      this.usuario = Object.assign(new Usuario(), data);
+      this.usuario.setUsuario(Object.assign(new Usuario(), data));
       return true
     }
   }
 
   async guardarLog() {
-    const { data, error } = await supabase.from('log').insert([{ id_usuario: this.usuario.id }]);
+    const { data, error } = await this.supabase.cliente.from('log').insert([{ id_usuario: this.usuarioId }]);
 
     if (error) {
       this.mostrarError('Problema accediendo a la base de datos.\nIntente denuevo mas tarde');
@@ -93,7 +89,7 @@ export class LoginComponent {
   }
 
   async emailYaRegistrado() {
-    const { data, error } = await supabase.from('usuarios').select('id').eq('email', this.email).maybeSingle();
+    const { data, error } = await this.supabase.cliente.from('usuarios').select('id').eq('email', this.email).maybeSingle();
 
     if (error) {
       this.mostrarError('Problema accediendo a la base de datos.\nIntente denuevo mas tarde');

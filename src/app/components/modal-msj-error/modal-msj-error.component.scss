@@ -1,36 +1,5 @@
-.custom-modal-content {
-    background-color: #010b15;
-    color: #ffffff;
-    border: none;
-    border-radius: 0.5rem;
-}
-
-.custom-modal-header {
-    background-color: #09252c;
-    color: #b39353;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    border-bottom: none;
-}
-
-.custom-modal-body {
-    background-color: #09252c;
-    color: #ffffff;
-    padding: 1rem 1.5rem;
-}
-
-.custom-modal-footer {
-    background-color: #09252c;
-    display: flex;
-    justify-content: flex-end;
-    padding: 1rem 1.5rem;
-    border-top: none;
-}
-
 // Boton cerrar del modal
-.btn-cerrar {
+.btn-modal-cerrar {
     background: #1c4549;
     color: #b39353;
     border: 1px solid #b39353;
@@ -40,7 +9,7 @@
     border-radius: 0.25rem;
 }
 
-.btn-cerrar:hover {
+.btn-modal-cerrar:hover {
     color: #51db84;
     border-color: #51db84;
     transform: scale(1.05);
