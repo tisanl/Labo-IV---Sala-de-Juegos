@@ -5,6 +5,9 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalFinJuegoComponent } from '../modal-fin-juego/modal-fin-juego.component';
 import { Cronometro, CronometroService } from '../../services/cronometro/cronometro.service';
 import { Subscription } from 'rxjs';
+import { ConexionSupabaseService } from '../../services/conexionSupabase/conexion-supabase.service';
+import { Score } from '../../components/scores/scores.component';
+import { UsuarioService } from '../../services/usuario/usuario.service';
 
 @Component({
   selector: 'app-ahorcado',
@@ -22,7 +25,7 @@ export class AhorcadoComponent implements OnInit, OnDestroy {
   cronometroSubscription: Subscription | null = null;
   cronometro?: Cronometro;
 
-  constructor(private router: Router, private modalService: NgbModal, private cronometroService: CronometroService) { }
+  constructor(private router: Router, private modalService: NgbModal, private cronometroService: CronometroService, private db: ConexionSupabaseService, private usuario: UsuarioService) { }
 
   ngOnInit(): void {
     this.getPalabra();
@@ -51,18 +54,43 @@ export class AhorcadoComponent implements OnInit, OnDestroy {
           this.listaLetrasMostradas[i] = letra;
       });
 
-      if (!this.listaLetrasMostradas.includes('_')){
-        this.mostrarModal('Victoria');
-        this.cronometroService.stop();
-      }
+      if (!this.listaLetrasMostradas.includes('_')) this.finalizarPartida(true)
     }
-    else {
+    else 
+    {
       this.errores++;
       if (this.errores == 7){
-        this.mostrarModal('Derrota\nLa palabra era: ' + this.palabra);
-        this.cronometroService.stop();
+        this.finalizarPartida(false);
       }
     }
+  }
+
+  finalizarPartida(victoria:boolean){
+    this.cronometroService.stop();
+    let puntos = 0;
+
+    if(victoria)
+    {
+      puntos += this.palabra.length * 20;
+      if(this.cronometro!.minutos < 1)
+        puntos += 100;
+      else if(this.cronometro!.minutos < 2)
+        puntos += 50;
+      else if(this.cronometro!.minutos < 3)
+        puntos += 25;
+
+      this.mostrarModal('Victoria!!\nPuntos totales: ' + puntos);
+
+      let score = new Score()
+      score.usuario_id = this.usuario.data!.id;
+      score.usuario_nombre = this.usuario.data!.nombre;
+      score.game = 'ahorcado';
+      score.points = puntos;
+      
+      this.db.guardarScore(score) 
+    }
+    else
+      this.mostrarModal('Derrota\nLa palabra era: ' + this.palabra);
   }
 
   mostrarModal(mensaje: string) {

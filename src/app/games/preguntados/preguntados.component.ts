@@ -10,45 +10,67 @@ import { Score } from '../../components/scores/scores.component';
 import { ConexionSupabaseService } from '../../services/conexionSupabase/conexion-supabase.service';
 import { UsuarioService } from '../../services/usuario/usuario.service';
 
-export interface Baraja {
-  succes: boolean;
-  deck_id: string;
-  cards: Array<Carta>;
-  remaining: number;
+export interface ApiResponseRickMorty {
+  info: info,
+  results: Array<Personaje>,
 }
 
-export interface Carta {
-  code: string,
+export interface info {
+  count: number,
+  pages: number,
+  next: string,
+  prev: string,
+}
+
+export interface Personaje {
+  id: number,
+  name: string,
+  status: string,
+  species: string,
+  type: string,
+  gender: string,
+  origin: {
+    name: string,
+    url: string
+  },
+  location: {
+    name: string,
+    url: string,
+  },
   image: string,
-  value: string,
-  suit: string
+  episode: [
+    string,
+  ],
+  url: string,
+  created: string,
 }
 
 @Component({
-  selector: 'app-mayor-menor',
+  selector: 'app-preguntados',
   standalone: false,
-  templateUrl: './mayor-menor.component.html',
-  styleUrl: './mayor-menor.component.scss'
+  templateUrl: './preguntados.component.html',
+  styleUrl: './preguntados.component.scss'
 })
-export class MayorMenorComponent implements OnInit, OnDestroy {
+export class PreguntadosComponent {
   cronometroSubscription: Subscription | null = null;
   cronometro?: Cronometro;
 
-  baraja!: Baraja;
+  personajes!: Array<Personaje>;
 
-  cartaUrlVolteada?: string;
-  cartaUrlPorVoltear?: string;
-  cartaParteAtras: string = '../../../assets/mayor-menor-images/logo.png';
-
-  cartaVolteadaIndex: number = 0;
-  cartaPorVoltearIndex: number = 1;
-  mostrarCartaVolteada: boolean = false;
+  personajeImagenUrl!: string;
 
   aciertos!: number;
-  cartasRestantes!: number;
+  preguntasRestantes!: number;
 
+  personajeSeleccionado!: Personaje;
   seleccionado: boolean = false;
   resultado: string = "";
+
+  opcion1: string = "";
+  opcion2: string = "";
+  opcion3: string = "";
+  opcion4: string = "";
+
 
   constructor(private router: Router, private modalService: NgbModal, private cronometroService: CronometroService, private http: SolicitudHttpService, private db: ConexionSupabaseService, private usuario: UsuarioService) { }
 
@@ -59,77 +81,65 @@ export class MayorMenorComponent implements OnInit, OnDestroy {
     });
 
     this.aciertos = 0;
-    this.cartasRestantes = 51;
+    this.preguntasRestantes = 10;
 
-    this.http.getDeckCartas('new', 52).subscribe({
-      next: (res: Baraja) => {
-        this.baraja = res;
-        this.dibujarCarta();
-        console.log(this.baraja.cards)
-      },
-      error: (err: any) => {
-        console.error('Error al obtener la baraja:', err);
-      }
+    this.http.getRickMortyPersonajes().subscribe(personajes => {
+      this.personajes = personajes;
+      if (!this.personajeSeleccionado)
+        this.siguienteRonda()
     });
   }
 
-  get cartaVolteada(): Carta {
-    return this.baraja.cards[this.cartaVolteadaIndex]
+  getPersonajeRandom() {
+    let i = Math.floor(Math.random() * this.personajes.length);
+    return this.personajes[i];
   }
 
-  get cartaPorVoltear(): Carta {
-    return this.baraja.cards[this.cartaPorVoltearIndex]
-  }
-
-  getValorCarta(carta: Carta): number {
-    if (carta.value == 'ACE') return 1
-    else if (carta.value == 'KING') return 13
-    else if (carta.value == 'QUEEN') return 12
-    else if (carta.value == 'JACK') return 11
-    else return Number(carta.value)
-  }
-
-  dibujarCarta() {
-    this.cartaUrlVolteada = this.cartaVolteada.image;
-    if (this.mostrarCartaVolteada) {
-      this.cartaUrlPorVoltear = this.cartaPorVoltear.image;
-      this.mostrarCartaVolteada = false;
-    }
-    else
-      this.cartaUrlPorVoltear = this.cartaParteAtras
+  getNombrePersonajeRandom() {
+    let i = Math.floor(Math.random() * this.personajes.length);
+    return this.personajes[i].name;
   }
 
   siguienteRonda() {
-    if (this.cartasRestantes == 0)
+    if (this.preguntasRestantes == 0) {
       this.finalizarPartida()
-    this.seleccionado = false;
-    this.cartaVolteadaIndex++;
-    this.cartaPorVoltearIndex++;
-    this.dibujarCarta()
-    this.resultado = ""
-  }
-
-  evaluarCarta(seleccion: string) {
-    this.seleccionado = true;
-    this.mostrarCartaVolteada = true;
-    this.dibujarCarta()
-
-    if (this.getValorCarta(this.cartaPorVoltear) > this.getValorCarta(this.cartaVolteada)) this.resultado = 'mayor';
-    else if (this.getValorCarta(this.cartaPorVoltear) < this.getValorCarta(this.cartaVolteada)) this.resultado = 'menor';
-    else this.resultado = 'igual';
-
-    if (seleccion == this.resultado) {
-      this.aciertos++;
+      return
     }
 
-    this.cartasRestantes--;
+    this.personajeSeleccionado = this.getPersonajeRandom()
+    this.personajeImagenUrl = this.personajeSeleccionado.image;
+    this.seleccionado = false;
+    let opciones = this.shuffle([this.getNombrePersonajeRandom(), this.getNombrePersonajeRandom(), this.getNombrePersonajeRandom(), this.personajeSeleccionado.name])
+    this.opcion1 = opciones[0]
+    this.opcion2 = opciones[1]
+    this.opcion3 = opciones[2]
+    this.opcion4 = opciones[3]
+    this.resultado = '';
+  }
+
+  private shuffle(opciones: Array<string>) {
+    for (let i = opciones.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [opciones[i], opciones[j]] = [opciones[j], opciones[i]];
+    }
+    return opciones;
+  }
+
+  evaluarRespuesta(seleccion: string) {
+    this.seleccionado = true;
+
+    this.resultado = this.personajeSeleccionado.name;
+
+    if (this.personajeSeleccionado.name == seleccion)
+      this.aciertos++;
+
+    this.preguntasRestantes--;
     setTimeout(() => this.siguienteRonda(), 2000);
   }
 
   finalizarPartida() {
     this.cronometroService.stop();
     let puntos = 0;
-
 
     puntos += this.aciertos * 10;
     if (this.cronometro!.minutos < 1)
@@ -144,12 +154,11 @@ export class MayorMenorComponent implements OnInit, OnDestroy {
     let score = new Score()
     score.usuario_id = this.usuario.data!.id;
     score.usuario_nombre = this.usuario.data!.nombre;
-    score.game = 'mayor-menor';
+    score.game = 'preguntados';
     score.points = puntos;
 
     this.db.guardarScore(score)
   }
-
 
   mostrarModal(mensaje: string) {
     const modalRef = this.modalService.open(ModalFinJuegoComponent, {

@@ -4,3 +4,21 @@
 @import 'styles/inputs.scss';
 @import 'styles/labels.scss';
 @import 'styles/cronometro.scss';
+
+.contenido-contenedor {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+main {
+    gap: 2rem;
+    background-color: #010b15;
+}

@@ -1,0 +1,21 @@
+<main class="contenido-contenedor">
+    <div class="chat-box">
+        <div class="chat-header">
+            <h2 class="chat-title">Sala de Chat</h2>
+        </div>
+    
+        <div class="messages-box">
+            <div *ngFor="let msg of chats; let i = index" class="chat-message">
+                <div  *ngIf="i === 0 || chats[i - 1].usuario_nombre !== msg.usuario_nombre" class="chat-message-author">{{ msg.usuario_nombre }}</div>
+                <div class="chat-message-bubble">{{ msg.content }}</div>
+                <div class="chat-message-time">{{ msg.hora }}</div>
+            </div>
+
+        </div>
+
+        <div class="chat-input">
+            <input [(ngModel)]="nuevoMensaje" class="input-custom" type="text" placeholder="Escribe un mensaje…" />
+            <button class="btn-type-3 btn-send" (click)="enviar()">Enviar</button>
+        </div>
+    </div>
+</main>

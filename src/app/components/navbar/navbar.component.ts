@@ -11,7 +11,7 @@ export class NavbarComponent {
 
   nombre: string = '';
 
-  constructor(private usuario: UsuarioService){ 
+  constructor(private usuario: UsuarioService){
     if(this.usuario.data && this.usuario.data.nombre && this.usuario.data.apellido)
       this.nombre = this.usuario.data.apellido + ' ' + this.usuario.data.nombre
   }

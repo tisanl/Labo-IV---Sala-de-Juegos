@@ -4,8 +4,6 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalMsjErrorComponent } from '../../components/modal-msj-error/modal-msj-error.component';
 
-import { ConexionSupabaseService } from '../../services/conexionSupabase/conexion-supabase.service';
-import { User } from '@supabase/supabase-js'
 import { UsuarioService } from '../../services/usuario/usuario.service';
 import { Usuario } from '../../models/usuario/usuario';
 
@@ -22,17 +20,24 @@ export class RegistroComponent {
   email: string = '';
   password: string = '';
 
-  constructor(private router: Router, private modalService: NgbModal, private supabase: ConexionSupabaseService, private usuario: UsuarioService) { }
+  constructor(private router: Router, private modalService: NgbModal, private usuario: UsuarioService) { }
 
-  async registrarUsuario() {
-    if (this.validarDatosRegistro()) {
-      if (await this.emailNoRegistrado()) {
-        const dataUser = await this.registrarAuth()
-        if (dataUser) {
-          await this.guardarDatosTablaUsuario(dataUser);
-          await this.guardarLog()
-          this.goTo('home');
-        }
+  async registrarUsuario() 
+  {
+    if (this.validarDatosRegistro()) 
+    {
+      let usuario = new Usuario()
+      usuario.nombre = this.nombre
+      usuario.apellido = this.apellido
+      usuario.fecha_nacimiento = this.fecha_nacimiento
+      usuario.email = this.email
+
+      try {
+        await this.usuario.registrar(usuario, this.password)
+        this.goTo('auth/login');
+      }
+      catch (e: any) {
+        this.mostrarError(e.message);
       }
     }
     else this.mostrarError('Hay datos incorrectos.');
@@ -52,71 +57,6 @@ export class RegistroComponent {
     if (this.password == null) return false
 
     return true
-  }
-
-  async registrarAuth() {
-    const { data, error } = await this.supabase.cliente.auth.signUp({ email: this.email, password: this.password, });
-
-    if (error) {
-      console.log(error.code)
-      if (error.code === 'weak_password')
-        this.mostrarError('La contraseña debe tener al menos 6 caracteres.');
-      else if (error.code === 'validation_failed')
-        this.mostrarError('El mail no es valido.');
-      else if (error.code === 'over_email_send_rate_limit')
-        this.mostrarError('Ha intentado muchas veces.\nIntente denuevo mas tarde');
-      else
-        this.mostrarError('A ocurrido un error.\nIntente denuevo mas tarde');
-      return false
-    }
-    else {
-      return data.user
-    }
-  }
-
-  async guardarDatosTablaUsuario(user: User) {
-    const { data, error } = await this.supabase.cliente.from('usuarios')
-      .insert([{ id: user.id, nombre: this.nombre, apellido: this.apellido, email: this.email, fecha_nacimiento: this.fecha_nacimiento }]);
-
-    if (error) {
-      console.log(error)
-      this.mostrarError('Problema accediendo a la base de datos.\nIntente denuevo mas tarde');
-      return false
-    }
-    else {
-      let usuario = new Usuario()
-      usuario.id = user.id
-      usuario.nombre = this.nombre
-      usuario.apellido = this.apellido
-      usuario.fecha_nacimiento = this.fecha_nacimiento
-      usuario.email = this.email
-      this.usuario.setUsuario(usuario);
-      return true
-    }
-  }
-
-  async guardarLog() {
-    const { data, error } = await this.supabase.cliente.from('log').insert([{ id_usuario: this.usuario.data!.id }]);
-
-    if (error) {
-      this.mostrarError('Problema accediendo a la base de datos.\nIntente denuevo mas tarde');
-      return false
-    }
-    else return true
-  }
-
-  async emailNoRegistrado() {
-    const { data, error } = await this.supabase.cliente.from('usuarios').select('id').eq('email', this.email).maybeSingle();
-
-    if (error) {
-      this.mostrarError('Problema accediendo a la base de datos.\nIntente denuevo mas tarde');
-      return false
-    }
-    else if (data !== null) {
-      this.mostrarError('El usuario ya se encuentra registrado');
-      return false
-    }
-    else return true
   }
 
   mostrarError(mensaje: string) {

@@ -8,6 +8,8 @@ import { AhorcadoComponent } from './ahorcado/ahorcado.component';
 import { MenuComponent } from './menu/menu.component';
 import { ModalFinJuegoComponent } from './modal-fin-juego/modal-fin-juego.component';
 import { MayorMenorComponent } from './mayor-menor/mayor-menor.component';
+import { PreguntadosComponent } from './preguntados/preguntados.component';
+import { AboutMeComponent } from "../components/about-me/about-me.component";
 
 
 @NgModule({
@@ -16,6 +18,7 @@ import { MayorMenorComponent } from './mayor-menor/mayor-menor.component';
     AhorcadoComponent,
     ModalFinJuegoComponent,
     MayorMenorComponent,
+    PreguntadosComponent,
   ],
   imports: [
     CommonModule,
@@ -25,6 +28,7 @@ import { MayorMenorComponent } from './mayor-menor/mayor-menor.component';
     NgClass,
     NgFor,
     NgIf,
-  ]
+    AboutMeComponent
+]
 })
 export class GamesModule { }

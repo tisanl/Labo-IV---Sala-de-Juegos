@@ -1,25 +1,25 @@
 .topbar {
-    position: fixed;
+    // Posicionamiento
+    position: sticky ; // Queda fijo arriba
     top: 0;
     left: 0;
     right: 0;
-    height: 56px;
-    background-color: #09252c;
-    color: #fff;
+    width: 100%; // Ocupa todo el ancho
+    padding: 0.30rem 1rem;
+    box-sizing: border-box;
+    // Para las cosas de adentro
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1rem;
+    // Colores
+    background-color: #09252c;
+    color: #fff;
     border-bottom: 2px solid #51db84;
-    z-index: 1000;
 }
 
 .logo-container {
-    position: absolute;
     left: 50%;
-    transform: translateX(-50%);
     top: 50%;
-    transform: translate(-50%, -50%);
 }
 
 .btn-barra-lateral {
@@ -27,9 +27,9 @@
     z-index: 1010;
     background: none;
     border: 2px solid #51db84;
-    padding: 0; 
-    width: 40px; 
-    height: 40px; 
+    padding: 0;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -38,8 +38,8 @@
 }
 
 .btn-barra-lateral img {
-    width: 50px;
-    height: 50px;
+    width: 3%;
+    height: 3%;
     object-fit: contain;
 }
 
